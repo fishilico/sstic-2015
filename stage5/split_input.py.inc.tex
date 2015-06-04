@@ -1,0 +1,101 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Split input.bin into the several payloads which are sent to transputers"""}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{struct}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'input.bin'}\scitek{,}\scitea{ }\scitee{'rb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{inputdata}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{read}\scitek{()}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Input data starts with the booted firmware}\scitea{} \\
+\scitel{bootlen}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitec{0}\scitek{]}\scitea{} \\
+\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] Transputer 0 code (\{\} bytes)"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{1}\scitek{,}\scitea{ }\scitel{bootlen}\scitek{,}\scitea{ }\scitel{bootlen}\scitek{))}\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'transputer0.bin'}\scitek{,}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{inputdata}\scitek{[}\scitec{1}\scitek{:}\scitec{1}\scitea{ }\scitek{+}\scitea{ }\scitel{bootlen}\scitek{])}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Then there is a zero-terminated list of packets forwarded to sub-links}\scitea{} \\
+\scitel{offset}\scitea{ }\scitek{=}\scitea{ }\scitec{1}\scitea{ }\scitek{+}\scitea{ }\scitel{bootlen}\scitea{} \\
+\scitel{level1pkts}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitec{1}\scitek{:}\scitea{ }\scitek{[],}\scitea{ }\scitec{2}\scitek{:}\scitea{ }\scitek{[],}\scitea{ }\scitec{3}\scitek{:}\scitea{ }\scitek{[]\}}\scitea{} \\
+\scitef{while}\scitea{ }\scitel{True}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Decode the 12-byte header}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{length}\scitek{,}\scitea{ }\scitel{destination}\scitek{,}\scitea{ }\scitel{\_}\scitea{ }\scitek{=}\scitea{ }\scitel{struct}\scitek{.}\scitel{unpack}\scitek{(}\scitee{'$<$III'}\scitek{,}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitek{])}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+=}\scitea{ }\scitec{12}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{length}\scitea{ }\scitek{==}\scitea{ }\scitec{0}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{break}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# destination 0x80000004 is link 1, 0x80000008 is link 2, 0x8000000c link 3}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{lnkdst}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{destination}\scitea{ }\scitek{-}\scitea{ }\scitec{0x80000000}\scitek{)}\scitea{ }\scitek{//}\scitea{ }\scitec{4}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{destination}\scitea{ }\scitek{==}\scitea{ }\scitec{0x80000000}\scitea{ }\scitek{+}\scitea{ }\scitel{lnkdst}\scitea{ }\scitek{*}\scitea{ }\scitec{4}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{level1pkts}\scitek{[}\scitel{lnkdst}\scitek{].}\scitel{append}\scitek{((}\scitel{offset}\scitek{,}\scitea{ }\scitel{length}\scitek{))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+=}\scitea{ }\scitel{length}\scitea{} \\
+\scitea{} \\
+\scitel{final\_offset}\scitea{ }\scitek{=}\scitea{ }\scitel{offset}\scitea{} \\
+\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] Transputer 0 forwarded packets:"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{1}\scitea{ }\scitek{+}\scitea{ }\scitel{bootlen}\scitek{,}\scitea{ }\scitel{final\_offset}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitek{))}\scitea{} \\
+\scitea{} \\
+\scitef{for}\scitea{ }\scitel{lnkdst}\scitea{ }\scitef{in}\scitea{ }\scitel{sorted}\scitek{(}\scitel{level1pkts}\scitek{.}\scitel{keys}\scitek{()):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{off\_len\_list}\scitea{ }\scitek{=}\scitea{ }\scitel{level1pkts}\scitek{[}\scitel{lnkdst}\scitek{]}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# First payload is main code for transputers 1, 2 and 3}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{(}\scitel{offset}\scitek{,}\scitea{ }\scitel{length}\scitek{)}\scitea{ }\scitek{=}\scitea{ }\scitel{off\_len\_list}\scitek{[}\scitec{0}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{codelen}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{codelen}\scitea{ }\scitek{==}\scitea{ }\scitel{length}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] * Transputer \{\} code (\{\} bytes)"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{,}\scitea{ }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitek{,}\scitea{ }\scitel{lnkdst}\scitek{,}\scitea{ }\scitel{codelen}\scitek{))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'transputer\{\}.bin'}\scitek{.}\scitel{format}\scitek{(}\scitel{lnkdst}\scitek{),}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{inputdata}\scitek{[}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitek{])}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Then forwarded packets}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{level2pkts}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitec{1}\scitek{:}\scitea{ }\scitek{[],}\scitea{ }\scitec{2}\scitek{:}\scitea{ }\scitek{[],}\scitea{ }\scitec{3}\scitek{:}\scitea{ }\scitek{[]\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitel{offset}\scitek{,}\scitea{ }\scitel{length}\scitea{ }\scitef{in}\scitea{ }\scitel{off\_len\_list}\scitek{[}\scitec{1}\scitek{:]:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{length2}\scitek{,}\scitea{ }\scitel{destination}\scitek{,}\scitea{ }\scitel{\_}\scitea{ }\scitek{=}\scitea{ }\scitel{struct}\scitek{.}\scitel{unpack}\scitek{(}\scitee{'$<$III'}\scitek{,}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitek{])}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{length2}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitea{ }\scitek{==}\scitea{ }\scitel{length}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{lnkdst2}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{destination}\scitea{ }\scitek{-}\scitea{ }\scitec{0x80000000}\scitek{)}\scitea{ }\scitek{//}\scitea{ }\scitec{4}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{destination}\scitea{ }\scitek{==}\scitea{ }\scitec{0x80000000}\scitea{ }\scitek{+}\scitea{ }\scitel{lnkdst2}\scitea{ }\scitek{*}\scitea{ }\scitec{4}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{level2pkts}\scitek{[}\scitel{lnkdst2}\scitek{].}\scitel{append}\scitek{((}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitek{,}\scitea{ }\scitel{length2}\scitek{))}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitel{lnkdst2}\scitea{ }\scitef{in}\scitea{ }\scitel{sorted}\scitek{(}\scitel{level2pkts}\scitek{.}\scitel{keys}\scitek{()):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{off\_len\_list}\scitea{ }\scitek{=}\scitea{ }\scitel{level2pkts}\scitek{[}\scitel{lnkdst2}\scitek{]}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# First payload is loader code for transputers 4-12}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transputer\_id}\scitea{ }\scitek{=}\scitea{ }\scitec{3}\scitea{ }\scitek{*}\scitea{ }\scitel{lnkdst}\scitea{ }\scitek{+}\scitea{ }\scitel{lnkdst2}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{(}\scitel{offset}\scitek{,}\scitea{ }\scitel{length}\scitek{)}\scitea{ }\scitek{=}\scitea{ }\scitel{off\_len\_list}\scitek{[}\scitec{0}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{codelen}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{codelen}\scitea{ }\scitek{==}\scitea{ }\scitel{length}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}]{\hspace*{1.2ex}}{\hspace*{1.2ex}} * Transputer \{\} loader code (\{\} bytes)"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{,}\scitea{ }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitek{,}\scitea{ }\scitel{transputer\_id}\scitek{,}\scitea{ }\scitel{codelen}\scitek{))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'transputer\{\}\_loader.bin'}\scitek{.}\scitel{format}\scitek{(}\scitel{transputer\_id}\scitek{),}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{inputdata}\scitek{[}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitek{])}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Second payload is main code}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{len}\scitek{(}\scitel{off\_len\_list}\scitek{)}\scitea{ }\scitek{==}\scitea{ }\scitec{2}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{(}\scitel{offset}\scitek{,}\scitea{ }\scitel{length}\scitek{)}\scitea{ }\scitek{=}\scitea{ }\scitel{off\_len\_list}\scitek{[}\scitec{1}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{length2}\scitek{,}\scitea{ }\scitel{\_}\scitek{,}\scitea{ }\scitel{entry}\scitea{ }\scitek{=}\scitea{ }\scitel{struct}\scitek{.}\scitel{unpack}\scitek{(}\scitee{'$<$III'}\scitek{,}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitek{])}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{length2}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitea{ }\scitek{==}\scitea{ }\scitel{length}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}]{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} * Transputer \{\} main code (\{\} bytes), entry \{:\#x\}"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitek{,}\scitea{ }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitek{,}\scitea{ }\scitel{transputer\_id}\scitek{,}\scitea{ }\scitel{length2}\scitek{,}\scitea{ }\scitel{entry}\scitek{))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'transputer\{\}\_main.bin'}\scitek{.}\scitel{format}\scitek{(}\scitel{transputer\_id}\scitek{),}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{inputdata}\scitek{[}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{12}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitek{])}\scitea{} \\
+\scitea{} \\
+\scitel{offset}\scitea{ }\scitek{=}\scitea{ }\scitel{final\_offset}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Key}\scitea{} \\
+\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] '\{\}'"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitek{,}\scitea{ }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{3}\scitek{,}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{4}\scitek{].}\scitel{decode}\scitek{(}\scitee{'ascii'}\scitek{)))}\scitea{} \\
+\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] \{\}"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{4}\scitek{,}\scitea{ }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{15}\scitek{,}\scitea{ }\scitel{repr}\scitek{(}\scitel{inputdata}\scitek{[}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{4}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{16}\scitek{])))}\scitea{} \\
+\scitel{offset}\scitea{ }\scitek{+=}\scitea{ }\scitec{16}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Name}\scitea{} \\
+\scitel{namelen}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{]}\scitea{} \\
+\scitel{name}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitea{ }\scitek{+}\scitea{ }\scitel{namelen}\scitek{].}\scitel{decode}\scitek{(}\scitee{'ascii'}\scitek{)}\scitea{} \\
+\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] Name: '\{\}'"}\scitek{.}\scitel{format}\scitek{(}\scitel{offset}\scitek{,}\scitea{ }\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitel{namelen}\scitek{,}\scitea{ }\scitel{name}\scitek{))}\scitea{} \\
+\scitel{offset}\scitea{ }\scitek{+=}\scitea{ }\scitec{1}\scitea{ }\scitek{+}\scitea{ }\scitel{namelen}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Encrypted data}\scitea{} \\
+\scitef{print}\scitek{(}\scited{"[\{:04x\}-\{:04x\}] Encrypted data (\{\} bytes)"}\scitek{.}\scitel{format}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitek{,}\scitea{ }\scitel{len}\scitek{(}\scitel{inputdata}\scitek{)}\scitea{ }\scitek{-}\scitea{ }\scitec{1}\scitek{,}\scitea{ }\scitel{len}\scitek{(}\scitel{inputdata}\scitek{)}\scitea{ }\scitek{-}\scitea{ }\scitel{offset}\scitek{))}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'encrypted'}\scitek{,}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{inputdata}\scitek{[}\scitel{offset}\scitek{:])}\scitea{} \\
+\scitea{}
+} %end small

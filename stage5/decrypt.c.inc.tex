@@ -1,0 +1,194 @@
+\small{
+\scited{/**} \\
+\scited{ * Decrypt congratulations.tar.bz2.enc by bruteforcing the key} \\
+\scited{ * Compile with: gcc -Wall -Wextra -O3 decrypt.c -o decrypt -lbz2} \\
+\scited{ */}\scitea{} \\
+\scitej{\#include $<$assert.h$>$} \\
+\scitej{\#include $<$stdint.h$>$} \\
+\scitej{\#include $<$stdio.h$>$} \\
+\scitej{\#include $<$stdlib.h$>$} \\
+\scitej{\#include $<$string.h$>$} \\
+\scitea{} \\
+\scitej{\#include $<$bzlib.h$>$} \\
+\scitea{} \\
+\scited{/**} \\
+\scited{ * Transputers code: decrypt size bytes in src to dst using the specified key} \\
+\scited{ */}\scitea{} \\
+\scitef{static}\scitea{ }\scitef{int}\scitea{ }\scitel{decrypt}\scitek{(}\scitef{const}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{argkey}\scitek{[}\scitee{12}\scitek{],}\scitea{ }\scitef{const}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitek{*}\scitel{src}\scitek{,}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitek{*}\scitel{dst}\scitek{,}\scitea{ }\scitel{uint32\_t}\scitea{ }\scitel{size}\scitek{)}\scitea{} \\
+\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{trans4w1}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitel{trans5w1}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint16\_t}\scitea{ }\scitel{trans6w1}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{trans8w4}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitel{trans8w5sums}\scitek{[}\scitee{4}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{\};}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{trans10w2}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitel{trans10w4buff0}\scitek{[}\scitee{4}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{\},}\scitea{ }\scitel{trans10w4buffers}\scitek{[}\scitee{4}\scitea{ }\scitek{*}\scitea{ }\scitee{12}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{\};}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{trans11next}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint32\_t}\scitea{ }\scitel{byteidx}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{key}\scitek{[}\scitee{12}\scitek{],}\scitea{ }\scitel{i}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{memcpy}\scitek{(}\scitel{key}\scitek{,}\scitea{ }\scitel{argkey}\scitek{,}\scitea{ }\scitee{12}\scitek{);}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{12}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans6w1}\scitea{ }\scitek{+=}\scitea{ }\scitel{key}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{byteidx}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{byteidx}\scitea{ }\scitek{$<$}\scitea{ }\scitel{size}\scitek{;}\scitea{ }\scitel{byteidx}\scitek{++)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitel{uint32\_t}\scitea{ }\scitel{keyidx}\scitea{ }\scitek{=}\scitea{ }\scitel{byteidx}\scitea{ }\scitek{\%}\scitea{ }\scitee{12}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{transres}\scitek{,}\scitea{ }\scitel{s0\_5}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitel{s6\_11}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitel{s0\_11}\scitek{,}\scitea{ }\scitel{s\_t10}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{*(}\scitel{dst}\scitek{++)}\scitea{ }\scitek{=}\scitea{ }\scitek{*(}\scitel{src}\scitek{++)}\scitea{ }\scitek{\^{ }}\scitea{ }\scitek{(}\scitel{keyidx}\scitea{ }\scitek{+}\scitea{ }\scitee{2}\scitea{ }\scitek{*}\scitea{ }\scitel{key}\scitek{[}\scitel{keyidx}\scitek{]);}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{6}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{s0\_5}\scitea{ }\scitek{+=}\scitea{ }\scitel{key}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{6}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{12}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{s6\_11}\scitea{ }\scitek{+=}\scitea{ }\scitel{key}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{s0\_11}\scitea{ }\scitek{=}\scitea{ }\scitel{s0\_5}\scitea{ }\scitek{+}\scitea{ }\scitel{s6\_11}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans6w1}\scitea{ }\scitek{=}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{((}\scitel{trans6w1}\scitea{ }\scitek{\&}\scitea{ }\scitee{0x8000}\scitek{)}\scitea{ }\scitek{$>$$>$}\scitea{ }\scitee{15}\scitek{)}\scitea{ }\scitek{\^{ }}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{((}\scitel{trans6w1}\scitea{ }\scitek{\&}\scitea{ }\scitee{0x4000}\scitek{)}\scitea{ }\scitek{$>$$>$}\scitea{ }\scitee{14}\scitek{)}\scitea{ }\scitek{\^{ }}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{((}\scitel{trans6w1}\scitea{ }\scitek{$<$$<$}\scitea{ }\scitee{1}\scitek{)}\scitea{ }\scitek{\&}\scitea{ }\scitee{0xffff}\scitek{);}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans8w5sums}\scitek{[}\scitel{trans8w4}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitel{s0\_11}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans8w4}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{trans8w4}\scitea{ }\scitek{+}\scitea{ }\scitee{1}\scitek{)}\scitea{ }\scitek{\%}\scitea{ }\scitee{4}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans10w4buff0}\scitek{[}\scitel{trans10w2}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitel{key}\scitek{[}\scitee{0}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{memcpy}\scitek{(}\scitel{trans10w4buffers}\scitea{ }\scitek{+}\scitea{ }\scitee{12}\scitea{ }\scitek{*}\scitea{ }\scitel{trans10w2}\scitek{,}\scitea{ }\scitel{key}\scitek{,}\scitea{ }\scitee{12}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans10w2}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{trans10w2}\scitea{ }\scitek{+}\scitea{ }\scitee{1}\scitek{)}\scitea{ }\scitek{\%}\scitea{ }\scitee{4}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transres}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{trans6w1}\scitea{ }\scitek{\&}\scitea{ }\scitee{0xff}\scitek{)}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{s0\_5}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{s6\_11}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{key}\scitek{[}\scitel{trans11next}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transres}\scitea{ }\scitek{\^{ }=}\scitea{ }\scitel{key}\scitek{[(}\scitel{key}\scitek{[}\scitee{0}\scitek{]}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{key}\scitek{[}\scitee{3}\scitek{]}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{key}\scitek{[}\scitee{7}\scitek{])}\scitea{ }\scitek{\%}\scitea{ }\scitee{12}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans11next}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{key}\scitek{[}\scitee{1}\scitek{]}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{key}\scitek{[}\scitee{5}\scitek{]}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{key}\scitek{[}\scitee{9}\scitek{])}\scitea{ }\scitek{\%}\scitea{ }\scitee{12}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{12}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{k}\scitea{ }\scitek{=}\scitea{ }\scitel{key}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans4w1}\scitea{ }\scitek{+=}\scitea{ }\scitel{k}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{trans5w1}\scitea{ }\scitek{\^{ }=}\scitea{ }\scitel{k}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transres}\scitea{ }\scitek{\^{ }=}\scitea{ }\scitel{k}\scitea{ }\scitek{$<$$<$}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{\&}\scitea{ }\scitee{7}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transres}\scitea{ }\scitek{\^{ }=}\scitea{ }\scitel{trans4w1}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{trans5w1}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{4}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transres}\scitea{ }\scitek{\^{ }=}\scitea{ }\scitel{trans8w5sums}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{4}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{s\_t10}\scitea{ }\scitek{+=}\scitea{ }\scitel{trans10w4buff0}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{transres}\scitea{ }\scitek{\^{ }=}\scitea{ }\scitel{trans10w4buffers}\scitek{[}\scitee{12}\scitea{ }\scitek{*}\scitea{ }\scitek{(}\scitel{s\_t10}\scitea{ }\scitek{\&}\scitea{ }\scitee{3}\scitek{)}\scitea{ }\scitek{+}\scitea{ }\scitek{((}\scitel{s\_t10}\scitea{ }\scitek{$>$$>$}\scitea{ }\scitee{4}\scitek{)}\scitea{ }\scitek{\%}\scitea{ }\scitee{12}\scitek{)];}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitek{[}\scitel{keyidx}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitel{transres}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Destination[14] will be written using key[2] later.} \\
+\sciteb{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} * Abort early if this byte will be non null for the BZip2 header.} \\
+\sciteb{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} * Don't abort when decrypting the test vector.} \\
+\sciteb{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitek{(}\scitel{size}\scitea{ }\scitek{$>$}\scitea{ }\scitee{100}\scitea{ }\scitek{\&\&}\scitea{ }\scitel{byteidx}\scitea{ }\scitek{==}\scitea{ }\scitee{2}\scitek{)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitek{*}\scitel{origsrc}\scitea{ }\scitek{=}\scitea{ }\scitel{src}\scitea{ }\scitek{-}\scitea{ }\scitel{byteidx}\scitea{ }\scitek{-}\scitea{ }\scitee{1}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{decrypt14}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{origsrc}\scitek{[}\scitee{14}\scitek{]}\scitea{ }\scitek{\^{ }}\scitea{ }\scitek{(}\scitee{2}\scitea{ }\scitek{+}\scitea{ }\scitee{2}\scitea{ }\scitek{*}\scitea{ }\scitel{key}\scitek{[}\scitee{2}\scitek{]))}\scitea{ }\scitek{\&}\scitea{ }\scitee{0xff}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitek{(}\scitel{decrypt14}\scitea{ }\scitek{!=}\scitea{ }\scitee{0}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{return}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{return}\scitea{ }\scitee{1}\scitek{;}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scited{/**} \\
+\scited{ * Test decrypt() function with the provided test vector} \\
+\scited{ */}\scitea{} \\
+\scitef{static}\scitea{ }\scitef{int}\scitea{ }\scitel{testvector}\scitek{(}\scitef{void}\scitek{)}\scitea{} \\
+\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{encrypted}\scitek{[]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0x1d}\scitek{,}\scitea{ }\scitee{0x87}\scitek{,}\scitea{ }\scitee{0xc4}\scitek{,}\scitea{ }\scitee{0xc4}\scitek{,}\scitea{ }\scitee{0xe0}\scitek{,}\scitea{ }\scitee{0xee}\scitek{,}\scitea{ }\scitee{0x40}\scitek{,}\scitea{ }\scitee{0x38}\scitek{,}\scitea{ }\scitee{0x3c}\scitek{,}\scitea{ }\scitee{0x59}\scitek{,}\scitea{ }\scitee{0x44}\scitek{,}\scitea{ }\scitee{0x7f}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0x23}\scitek{,}\scitea{ }\scitee{0x79}\scitek{,}\scitea{ }\scitee{0x8d}\scitek{,}\scitea{ }\scitee{0x9f}\scitek{,}\scitea{ }\scitee{0xef}\scitek{,}\scitea{ }\scitee{0xe7}\scitek{,}\scitea{ }\scitee{0x4f}\scitek{,}\scitea{ }\scitee{0xb8}\scitek{,}\scitea{ }\scitee{0x24}\scitek{,}\scitea{ }\scitee{0x80}\scitek{,}\scitea{ }\scitee{0x76}\scitek{,}\scitea{ }\scitee{0x6e}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\};}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{key}\scitek{[]}\scitea{ }\scitek{=}\scitea{ }\sciteg{"*SSTIC-2015*"}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{decrypted}\scitek{[}\scitee{25}\scitek{];}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decrypt}\scitek{(}\scitel{key}\scitek{,}\scitea{ }\scitel{encrypted}\scitek{,}\scitea{ }\scitel{decrypted}\scitek{,}\scitea{ }\scitee{24}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decrypted}\scitek{[}\scitee{24}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\sciteh{'{\textbackslash}0'}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{printf}\scitek{(}\sciteg{"\%s{\textbackslash}n"}\scitek{,}\scitea{ }\scitek{(}\scitef{char}\scitea{ }\scitek{*)}\scitel{decrypted}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{return}\scitea{ }\scitek{!}\scitel{strcmp}\scitek{((}\scitef{char}\scitea{ }\scitek{*)}\scitel{decrypted}\scitek{,}\scitea{ }\sciteg{"I love ST20 architecture"}\scitek{);}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitef{int}\scitea{ }\scitel{main}\scitek{(}\scitef{int}\scitea{ }\scitel{argc}\scitek{,}\scitea{ }\scitef{char}\scitea{ }\scitek{**}\scitel{argv}\scitek{)}\scitea{} \\
+\scitek{\{}\scitea{} \\
+\scitej{\#define INPUT\_SIZE 250606} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{static}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{encrypted}\scitek{[}\scitel{INPUT\_SIZE}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{static}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{decrypted}\scitek{[}\scitel{INPUT\_SIZE}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{static}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{decompressed}\scitek{[}\scitel{INPUT\_SIZE}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{key}\scitek{[}\scitee{12}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitel{uint8\_t}\scitea{ }\scitel{bz2head}\scitek{[}\scitee{10}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0x42}\scitek{,}\scitea{ }\scitee{0x5a}\scitek{,}\scitea{ }\scitee{0x68}\scitek{,}\scitea{ }\scitee{0x39}\scitek{,}\scitea{ }\scitee{0x31}\scitek{,}\scitea{ }\scitee{0x41}\scitek{,}\scitea{ }\scitee{0x59}\scitek{,}\scitea{ }\scitee{0x26}\scitek{,}\scitea{ }\scitee{0x53}\scitek{,}\scitea{ }\scitee{0x59}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\};}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{unsigned}\scitea{ }\scitef{int}\scitea{ }\scitel{i}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ssize\_t}\scitea{ }\scitel{ret\_size}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{FILE}\scitea{ }\scitek{*}\scitel{f}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bz\_stream}\scitea{ }\scitel{bst}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{int}\scitea{ }\scitel{bzret}\scitek{,}\scitea{ }\scitel{j}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{(}\scitel{testvector}\scitek{());}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitea{ }\scitek{=}\scitea{ }\scitel{fopen}\scitek{(}\sciteg{"encrypted"}\scitek{,}\scitea{ }\sciteg{"rb"}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{(}\scitel{f}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ret\_size}\scitea{ }\scitek{=}\scitea{ }\scitel{fread}\scitek{(}\scitel{encrypted}\scitek{,}\scitea{ }\scitee{1}\scitek{,}\scitea{ }\scitel{INPUT\_SIZE}\scitek{,}\scitea{ }\scitel{f}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{(}\scitel{ret\_size}\scitea{ }\scitek{==}\scitea{ }\scitel{INPUT\_SIZE}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fclose}\scitek{(}\scitel{f}\scitek{);}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Initialize key constants from BZip2 header magic */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{bz2head}\scitek{);}\scitea{ }\scitel{i}\scitek{++)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{uint8\_t}\scitea{ }\scitel{wanted}\scitea{ }\scitek{=}\scitea{ }\scitel{encrypted}\scitek{[}\scitel{i}\scitek{]}\scitea{ }\scitek{\^{ }}\scitea{ }\scitel{bz2head}\scitek{[}\scitel{i}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{((}\scitel{wanted}\scitea{ }\scitek{-}\scitea{ }\scitel{i}\scitek{)}\scitea{ }\scitek{\%}\scitea{ }\scitee{2}\scitea{ }\scitek{==}\scitea{ }\scitee{0}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitek{[}\scitel{i}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{((}\scitel{wanted}\scitea{ }\scitek{-}\scitea{ }\scitel{i}\scitek{)}\scitea{ }\scitek{/}\scitea{ }\scitee{2}\scitek{)}\scitea{ }\scitek{\&}\scitea{ }\scitee{0x7f}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Bruteforce keys, starting with the given integer, if any */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{i}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{argc}\scitea{ }\scitek{$>$=}\scitea{ }\scitee{2}\scitek{)}\scitea{ }\scitek{?}\scitea{ }\scitek{(}\scitef{unsigned}\scitea{ }\scitef{int}\scitek{)}\scitel{atoi}\scitek{(}\scitel{argv}\scitek{[}\scitee{1}\scitek{])}\scitea{ }\scitek{:}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(;}\scitea{ }\scitel{i}\scitea{ }\scitek{$<$}\scitea{ }\scitee{256}\scitea{ }\scitek{*}\scitea{ }\scitee{256}\scitea{ }\scitek{*}\scitea{ }\scitee{1024}\scitek{;}\scitea{ }\scitel{i}\scitek{++)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Choose the most significant bits of 10 first bytes according to i */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{j}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{j}\scitea{ }\scitek{$<$}\scitea{ }\scitee{10}\scitek{;}\scitea{ }\scitel{j}\scitek{++)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitek{((}\scitel{i}\scitea{ }\scitek{$>$$>$}\scitea{ }\scitek{(}\scitee{16}\scitea{ }\scitek{+}\scitea{ }\scitel{j}\scitek{))}\scitea{ }\scitek{\&}\scitea{ }\scitee{1}\scitek{)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitek{[}\scitel{j}\scitek{]}\scitea{ }\scitek{|=}\scitea{ }\scitee{0x80}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{ }\scitef{else}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitek{[}\scitel{j}\scitek{]}\scitea{ }\scitek{\&=}\scitea{ }\scitee{0x7f}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Bytes 10 and 11 can't be known */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitek{[}\scitee{10}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitel{i}\scitea{ }\scitek{$>$$>$}\scitea{ }\scitee{8}\scitek{)}\scitea{ }\scitek{\&}\scitea{ }\scitee{0xff}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitek{[}\scitee{11}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitel{i}\scitea{ }\scitek{\&}\scitea{ }\scitee{0xff}\scitek{;}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitek{(!}\scitel{decrypt}\scitek{(}\scitel{key}\scitek{,}\scitea{ }\scitel{encrypted}\scitek{,}\scitea{ }\scitel{decrypted}\scitek{,}\scitea{ }\scitel{INPUT\_SIZE}\scitek{))}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Decrypt aborted early, so the key is invalid */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{continue}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Test BZ2 data */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{memset}\scitek{(\&}\scitel{bst}\scitek{,}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{bst}\scitek{));}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bzret}\scitea{ }\scitek{=}\scitea{ }\scitel{BZ2\_bzDecompressInit}\scitek{(\&}\scitel{bst}\scitek{,}\scitea{ }\scitee{0}\scitek{,}\scitea{ }\scitee{0}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{(}\scitel{bzret}\scitea{ }\scitek{==}\scitea{ }\scitel{BZ\_OK}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bst}\scitek{.}\scitel{next\_in}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitef{char}\scitea{ }\scitek{*)}\scitel{decrypted}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bst}\scitek{.}\scitel{avail\_in}\scitea{ }\scitek{=}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{decrypted}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bst}\scitek{.}\scitel{next\_out}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitef{char}\scitea{ }\scitek{*)}\scitel{decompressed}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bst}\scitek{.}\scitel{avail\_out}\scitea{ }\scitek{=}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{decompressed}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bzret}\scitea{ }\scitek{=}\scitea{ }\scitel{BZ2\_bzDecompress}\scitek{(\&}\scitel{bst}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{BZ2\_bzDecompressEnd}\scitek{(\&}\scitel{bst}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitek{(}\scitel{bzret}\scitea{ }\scitek{$<$}\scitea{ }\scitee{0}\scitek{)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Invalid data */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{continue}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Key found */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{printf}\scitek{(}\sciteg{"Found \%\#04x{\textbackslash}n"}\scitek{,}\scitea{ }\scitel{i}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{printf}\scitek{(}\sciteg{"Key:"}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitek{(}\scitel{j}\scitea{ }\scitek{=}\scitea{ }\scitee{0}\scitek{;}\scitea{ }\scitel{j}\scitea{ }\scitek{$<$}\scitea{ }\scitee{12}\scitek{;}\scitea{ }\scitel{j}\scitek{++)}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{printf}\scitek{(}\sciteg{" \%02x"}\scitek{,}\scitea{ }\scitel{key}\scitek{[}\scitel{j}\scitek{]);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{printf}\scitek{(}\sciteg{"{\textbackslash}n"}\scitek{);}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Save the file */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitea{ }\scitek{=}\scitea{ }\scitel{fopen}\scitek{(}\sciteg{"congratulations.tar.bz2"}\scitek{,}\scitea{ }\sciteg{"wb"}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{(}\scitel{f}\scitea{ }\scitek{!=}\scitea{ }\scitel{NULL}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ret\_size}\scitea{ }\scitek{=}\scitea{ }\scitel{fwrite}\scitek{(}\scitel{decrypted}\scitek{,}\scitea{ }\scitee{1}\scitek{,}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{decrypted}\scitek{),}\scitea{ }\scitel{f}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{assert}\scitek{(}\scitel{ret\_size}\scitea{ }\scitek{==}\scitea{ }\scitek{(}\scitel{ssize\_t}\scitek{)}\scitef{sizeof}\scitek{(}\scitel{decrypted}\scitek{));}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fclose}\scitek{(}\scitel{f}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{return}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fprintf}\scitek{(}\scitel{stderr}\scitek{,}\scitea{ }\sciteg{"Bruteforce failed!{\textbackslash}n"}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{return}\scitea{ }\scitee{1}\scitek{;}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{}
+} %end small

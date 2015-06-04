@@ -1,0 +1,77 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Decode the main program which is run on transputers 4 to 12"""}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{sys}\scitea{} \\
+\scitel{sys}\scitek{.}\scitel{path}\scitek{.}\scitel{insert}\scitek{(}\scitec{0}\scitek{,}\scitea{ }\scitee{'.'}\scitek{)}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{decode\_st20}\scitea{ }\scitef{import}\scitea{ }\scitel{FileMeta}\scitea{} \\
+\scitea{} \\
+\scitel{CODE\_LABELS}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{4}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x33}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x3e}\scitek{:}\scitea{ }\scitee{'forloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x55}\scitek{:}\scitea{ }\scitee{'forloop\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{5}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x33}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x3e}\scitek{:}\scitea{ }\scitee{'forloop\_W[0]=0..11'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x55}\scitek{:}\scitea{ }\scitee{'forloop\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{6}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x33}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x42}\scitek{:}\scitea{ }\scitee{'forloop\_W[0]=0..11'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x59}\scitek{:}\scitea{ }\scitee{'forloop\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x5b}\scitek{:}\scitea{ }\scitee{'endif'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{7}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x2f}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x3e}\scitek{:}\scitea{ }\scitee{'forloop\_W[0]=0..6'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x5e}\scitek{:}\scitea{ }\scitee{'forloop\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{8}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x33}\scitek{:}\scitea{ }\scitee{'init\_forloop1\_W[2]=0..3'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x35}\scitek{:}\scitea{ }\scitee{'init\_forloop2\_W[0]=0..11'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x48}\scitek{:}\scitea{ }\scitee{'init\_forloop2\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x51}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x69}\scitek{:}\scitea{ }\scitee{'\_0x80001069'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x6f}\scitek{:}\scitea{ }\scitee{'forloop1\_W[2]=0..3'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x73}\scitek{:}\scitea{ }\scitee{'forloop2\_W[0]=0..11'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x8c}\scitek{:}\scitea{ }\scitee{'forloop2\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0xa1}\scitek{:}\scitea{ }\scitee{'forloop1\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{9}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x2f}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x3e}\scitek{:}\scitea{ }\scitee{'forloop\_W[0]=0..11'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x5b}\scitek{:}\scitea{ }\scitee{'forloop\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{10}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x33}\scitek{:}\scitea{ }\scitee{'init\_forloop1\_W[0]=0..3'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x35}\scitek{:}\scitea{ }\scitee{'init\_forloop2\_W[1]=0..11'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x48}\scitek{:}\scitea{ }\scitee{'init\_forloop2\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x51}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x69}\scitek{:}\scitea{ }\scitee{'endif'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x6d}\scitek{:}\scitea{ }\scitee{'forloop\_W[0]=0..4'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x84}\scitek{:}\scitea{ }\scitee{'forloop\_end'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{11}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x31}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\},}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{12}\scitek{:}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x33}\scitek{:}\scitea{ }\scitee{'fill\_W[3,4,5]\_with\_zeros'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x42}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\}}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitef{for}\scitea{ }\scitel{i}\scitea{ }\scitef{in}\scitea{ }\scitel{range}\scitek{(}\scitec{4}\scitek{,}\scitea{ }\scitec{13}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"{\textbackslash}n-{}--{}--{}--{}--{}--{}--{}--{}- [ TRANSPUTER \{\}] -{}--{}--{}--{}--{}--{}--{}--{}-"}\scitek{.}\scitel{format}\scitek{(}\scitel{i}\scitek{))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'transputer\{\}\_main.bin'}\scitek{.}\scitel{format}\scitek{(}\scitel{i}\scitek{),}\scitea{ }\scitee{'rb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fw}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{read}\scitek{().}\scitel{rstrip}\scitek{(}\scitee{b' '}\scitek{)}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{code\_labels}\scitea{ }\scitek{=}\scitea{ }\scitel{CODE\_LABELS}\scitek{.}\scitel{get}\scitek{(}\scitel{i}\scitek{,}\scitea{ }\scitek{\{\})}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{code\_labels}\scitek{[}\scitec{0x1f}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitee{'recv(chan=B, mem=C, len=W[0])'}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{code\_labels}\scitek{[}\scitec{0x25}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitee{'send(chan=B, mem=C, len=W[0])'}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{code\_labels}\scitek{[}\scitec{0x2b}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitee{'entry'}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{comments}\scitea{ }\scitek{=}\scitea{ }\scitek{\{\}}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{FileMeta}\scitek{(}\scitel{fw}\scitek{,}\scitea{ }\scitec{0x1f}\scitek{,}\scitea{ }\scitel{code\_labels}\scitek{,}\scitea{ }\scitek{\{\},}\scitea{ }\scitel{comments}\scitek{).}\scitel{show\_all}\scitek{()}\scitea{} \\
+\scitea{}
+} %end small

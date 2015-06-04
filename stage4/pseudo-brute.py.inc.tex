@@ -1,0 +1,35 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Brute-force the User-Agent used to encrypt a zip archive"""}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{Crypto}\scitek{.}\scitel{Cipher}\scitea{ }\scitef{import}\scitea{ }\scitel{AES}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{hashlib}\scitea{ }\scitef{import}\scitea{ }\scitel{sha1}\scitea{} \\
+\scitea{} \\
+\scitef{from}\scitea{ }\scitek{.}\scitea{ }\scitef{import}\scitea{ }\scitel{generate\_useragents}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Read the encrypted data and the SHA-1 hash of the decrypted data}\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'stage4.js'}\scitek{,}\scitea{ }\scitee{'r'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{encrypted\_hex}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{readline}\scitek{().}\scitel{strip}\scitek{().}\scitel{lstrip}\scitek{(}\scitee{'var data = "'}\scitek{).}\scitel{rstrip}\scitek{(}\scitee{'";'}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{encrypted}\scitea{ }\scitek{=}\scitea{ }\scitel{bytes}\scitek{.}\scitel{fromhex}\scitek{(}\scitel{encrypted\_hex}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{hash\_hex}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{readline}\scitek{().}\scitel{strip}\scitek{().}\scitel{lstrip}\scitek{(}\scitee{'var hash = "'}\scitek{).}\scitel{rstrip}\scitek{(}\scitee{'";'}\scitek{)}\scitea{} \\
+\scitea{} \\
+\scitef{for}\scitea{ }\scitel{useragent}\scitea{ }\scitef{in}\scitea{ }\scitel{generate\_useragents}\scitek{.}\scitel{gen\_ua}\scitek{():}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{iv}\scitea{ }\scitek{=}\scitea{ }\scitel{useragent}\scitek{[}\scitel{useragent}\scitek{.}\scitel{index}\scitek{(}\scitee{'('}\scitek{)}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{:][:}\scitec{16}\scitek{].}\scitel{encode}\scitek{(}\scitee{'ascii'}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{key}\scitea{ }\scitek{=}\scitea{ }\scitel{useragent}\scitek{[}\scitel{useragent}\scitek{.}\scitel{index}\scitek{(}\scitee{')'}\scitek{)}\scitea{ }\scitek{-}\scitea{ }\scitec{16}\scitek{:][:}\scitec{16}\scitek{].}\scitel{encode}\scitek{(}\scitee{'ascii'}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{assert}\scitea{ }\scitel{len}\scitek{(}\scitel{iv}\scitek{)}\scitea{ }\scitek{==}\scitea{ }\scitel{len}\scitek{(}\scitel{key}\scitek{)}\scitea{ }\scitek{==}\scitea{ }\scitec{16}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decrypted}\scitea{ }\scitek{=}\scitea{ }\scitel{AES}\scitek{.}\scitel{new}\scitek{(}\scitel{key}\scitek{,}\scitea{ }\scitel{AES}\scitek{.}\scitel{MODE\_CBC}\scitek{,}\scitea{ }\scitel{iv}\scitek{).}\scitel{decrypt}\scitek{(}\scitel{encrypted}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{sha1}\scitek{(}\scitel{decrypted}\scitek{).}\scitel{hexdigest}\scitek{()}\scitea{ }\scitek{==}\scitea{ }\scitel{hash\_hex}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"SUCCESS!"}\scitek{,}\scitea{ }\scitel{useragent}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{break}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Remove padding, if valid}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{padlen}\scitea{ }\scitek{=}\scitea{ }\scitel{decrypted}\scitek{[-}\scitec{1}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{padlen}\scitea{ }\scitek{$<$=}\scitea{ }\scitec{16}\scitea{ }\scitef{and}\scitea{ }\scitel{all}\scitek{(}\scitel{d}\scitea{ }\scitek{==}\scitea{ }\scitel{padlen}\scitea{ }\scitef{for}\scitea{ }\scitel{d}\scitea{ }\scitef{in}\scitea{ }\scitel{decrypted}\scitek{[-}\scitel{padlen}\scitek{:]):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decrypted}\scitea{ }\scitek{=}\scitea{ }\scitel{decrypted}\scitek{[:-}\scitel{padlen}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Re-test the hash}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{sha1}\scitek{(}\scitel{decrypted}\scitek{).}\scitel{hexdigest}\scitek{()}\scitea{ }\scitek{==}\scitea{ }\scitel{hash\_hex}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"SUCCESS!"}\scitek{,}\scitea{ }\scitel{useragent}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{break}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Test if the key is correct}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{decrypted}\scitek{[-}\scitec{22}\scitek{:-}\scitec{20}\scitek{]}\scitea{ }\scitek{==}\scitea{ }\scitee{b'PK'}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scited{"Potential ZIP, key may be good..."}\scitek{,}\scitea{ }\scitel{key}\scitek{,}\scitea{ }\scitel{useragent}\scitek{)}\scitea{} \\
+\scitea{}
+} %end small

@@ -1,0 +1,68 @@
+\small{
+\sciteb{\#!/usr/bin/env python2}\scitea{} \\
+\sciteh{"""Decode the mouse movements in paint.cap"""}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{scapy}\scitek{.}\scitel{all}\scitea{ }\scitef{import}\scitea{ }\scitek{*}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{PIL}\scitea{ }\scitef{import}\scitea{ }\scitel{Image}\scitek{,}\scitea{ }\scitel{ImageDraw}\scitea{} \\
+\scitea{} \\
+\scitef{class}\scitea{ }\scitei{URB}\scitek{(}\scitel{Packet}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fields\_desc}\scitea{ }\scitek{=}\scitea{ }\scitek{[}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LELongField}\scitek{(}\scitee{'URB\_id'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ByteField}\scitek{(}\scitee{'URB\_type'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ByteField}\scitek{(}\scitee{'URB\_transfer\_type'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{BitField}\scitek{(}\scitee{'URB\_direction'}\scitek{,}\scitea{ }\scitec{0}\scitek{,}\scitea{ }\scitec{1}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{BitField}\scitek{(}\scitee{'URB\_endpoint'}\scitek{,}\scitea{ }\scitec{0}\scitek{,}\scitea{ }\scitec{7}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ByteField}\scitek{(}\scitee{'URB\_device'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEShortField}\scitek{(}\scitee{'URB\_busid'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ByteField}\scitek{(}\scitee{'device\_setup\_rq'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ByteField}\scitek{(}\scitee{'data\_ispresent'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LELongField}\scitek{(}\scitee{'URB\_sec'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'URB\_usec'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'URB\_status'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'URB\_length'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'data\_length'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{XLongField}\scitek{(}\scitee{'UNKNOWN'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'interval'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'start\_frame'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'copy\_transfer\_flags'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{LEIntField}\scitek{(}\scitee{'num\_iso\_desc'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{]}\scitea{} \\
+\scitea{} \\
+\scitef{class}\scitea{ }\scitei{SignedByteField}\scitek{(}\scitel{Field}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{def}\scitea{ }\scitej{\_\_init\_\_}\scitek{(}\scitel{self}\scitek{,}\scitea{ }\scitel{name}\scitek{,}\scitea{ }\scitel{default}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{Field}\scitek{.}\scitel{\_\_init\_\_}\scitek{(}\scitel{self}\scitek{,}\scitea{ }\scitel{name}\scitek{,}\scitea{ }\scitel{default}\scitek{,}\scitea{ }\scitel{fmt}\scitek{=}\scited{"b"}\scitek{)}\scitea{} \\
+\scitea{} \\
+\scitef{class}\scitea{ }\scitei{URBMouseInput}\scitek{(}\scitel{Packet}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fields\_desc}\scitea{ }\scitek{=}\scitea{ }\scitek{[}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{ByteField}\scitek{(}\scitee{'buttons'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{SignedByteField}\scitek{(}\scitee{'rel\_x'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{SignedByteField}\scitek{(}\scitee{'rel\_y'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{SignedByteField}\scitek{(}\scitee{'rel\_z'}\scitek{,}\scitea{ }\scitec{0}\scitek{),}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{]}\scitea{} \\
+\scitea{} \\
+\scitel{conf}\scitek{.}\scitel{l2types}\scitek{.}\scitel{register}\scitek{(}\scitec{220}\scitek{,}\scitea{ }\scitel{URB}\scitek{)}\scitea{} \\
+\scitea{} \\
+\sciteb{\# List of mouse positions (btn, x, y) relative to the initial position}\scitea{} \\
+\scitel{mousemove\_list}\scitea{ }\scitek{=}\scitea{ }\scitek{[]}\scitea{} \\
+\scitel{packets}\scitea{ }\scitek{=}\scitea{ }\scitel{rdpcap}\scitek{(}\scitee{'paint.cap'}\scitek{)}\scitea{} \\
+\scitel{x}\scitea{ }\scitek{=}\scitea{ }\scitel{y}\scitea{ }\scitek{=}\scitea{ }\scitec{0}\scitea{} \\
+\scitef{for}\scitea{ }\scitel{urbpkt}\scitea{ }\scitef{in}\scitea{ }\scitel{packets}\scitek{[}\scitec{6}\scitek{:]:}\scitea{{\hspace*{1.2ex}} }\sciteb{\# Skip the first 6 packets}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{urbpkt}\scitek{.}\scitel{data\_length}\scitea{ }\scitek{==}\scitea{ }\scitec{0}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{continue}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{mouse\_in}\scitea{ }\scitek{=}\scitea{ }\scitel{URBMouseInput}\scitek{(}\scitel{urbpkt}\scitek{.}\scitel{payload}\scitek{.}\scitel{load}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{x}\scitea{ }\scitek{+=}\scitea{ }\scitel{mouse\_in}\scitek{.}\scitel{rel\_x}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{y}\scitea{ }\scitek{+=}\scitea{ }\scitel{mouse\_in}\scitek{.}\scitel{rel\_y}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{mousemove\_list}\scitek{.}\scitel{append}\scitek{((}\scitel{mouse\_in}\scitek{.}\scitel{buttons}\scitek{,}\scitea{ }\scitel{x}\scitek{,}\scitea{ }\scitel{y}\scitek{))}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Replay the mouse move movements in an image}\scitea{} \\
+\scitel{xmin}\scitea{ }\scitek{=}\scitea{ }\scitel{min}\scitek{(}\scitel{mm}\scitek{[}\scitec{1}\scitek{]}\scitea{ }\scitef{for}\scitea{ }\scitel{mm}\scitea{ }\scitef{in}\scitea{ }\scitel{mousemove\_list}\scitek{)}\scitea{} \\
+\scitel{xmax}\scitea{ }\scitek{=}\scitea{ }\scitel{max}\scitek{(}\scitel{mm}\scitek{[}\scitec{1}\scitek{]}\scitea{ }\scitef{for}\scitea{ }\scitel{mm}\scitea{ }\scitef{in}\scitea{ }\scitel{mousemove\_list}\scitek{)}\scitea{} \\
+\scitel{ymin}\scitea{ }\scitek{=}\scitea{ }\scitel{min}\scitek{(}\scitel{mm}\scitek{[}\scitec{2}\scitek{]}\scitea{ }\scitef{for}\scitea{ }\scitel{mm}\scitea{ }\scitef{in}\scitea{ }\scitel{mousemove\_list}\scitek{)}\scitea{} \\
+\scitel{ymax}\scitea{ }\scitek{=}\scitea{ }\scitel{max}\scitek{(}\scitel{mm}\scitek{[}\scitec{2}\scitek{]}\scitea{ }\scitef{for}\scitea{ }\scitel{mm}\scitea{ }\scitef{in}\scitea{ }\scitel{mousemove\_list}\scitek{)}\scitea{} \\
+\scitel{im}\scitea{ }\scitek{=}\scitea{ }\scitel{Image}\scitek{.}\scitel{new}\scitek{(}\scitee{'RGB'}\scitek{,}\scitea{ }\scitek{(}\scitel{xmax}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitea{ }\scitek{-}\scitea{ }\scitel{xmin}\scitek{,}\scitea{ }\scitel{ymax}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitea{ }\scitek{-}\scitea{ }\scitel{ymin}\scitek{),}\scitea{ }\scitee{'white'}\scitek{)}\scitea{} \\
+\scitel{draw}\scitea{ }\scitek{=}\scitea{ }\scitel{ImageDraw}\scitek{.}\scitel{Draw}\scitek{(}\scitel{im}\scitek{)}\scitea{} \\
+\scitef{for}\scitea{ }\scitel{btn}\scitek{,}\scitea{ }\scitel{x}\scitek{,}\scitea{ }\scitel{y}\scitea{ }\scitef{in}\scitea{ }\scitel{mousemove\_list}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{btn}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{draw}\scitek{.}\scitel{point}\scitek{((}\scitel{x}\scitea{ }\scitek{-}\scitea{ }\scitel{xmin}\scitek{,}\scitea{ }\scitel{y}\scitea{ }\scitek{-}\scitea{ }\scitel{ymin}\scitek{),}\scitea{ }\scitel{fill}\scitek{=}\scitee{'black'}\scitek{)}\scitea{} \\
+\scitel{im}\scitek{.}\scitel{save}\scitek{(}\scitee{'paint-out.png'}\scitek{,}\scitea{ }\scitee{'PNG'}\scitek{)}\scitea{} \\
+\scitea{}
+} %end small

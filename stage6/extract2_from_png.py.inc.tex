@@ -1,0 +1,24 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Extract the data from the sTic sections of congratulations.png"""}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{struct}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{zlib}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'congratulations.png'}\scitek{,}\scitea{ }\scitee{'rb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{pngdata}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{read}\scitek{()}\scitea{} \\
+\scitea{} \\
+\scitel{offset}\scitea{ }\scitek{=}\scitea{ }\scitec{0x5b}\scitea{} \\
+\scitel{hiddendata}\scitea{ }\scitek{=}\scitea{ }\scitee{b''}\scitea{} \\
+\scitef{while}\scitea{ }\scitel{True}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{length}\scitek{,}\scitea{ }\scitel{chunktype}\scitea{ }\scitek{=}\scitea{ }\scitel{struct}\scitek{.}\scitel{unpack}\scitek{(}\scitee{'$>$II'}\scitek{,}\scitea{ }\scitel{pngdata}\scitek{[}\scitel{offset}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{8}\scitek{])}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{\# Stop when the chunk type is no longer "sTic"}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{chunktype}\scitea{ }\scitek{!=}\scitea{ }\scitec{0x73546963}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{break}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{hiddendata}\scitea{ }\scitek{+=}\scitea{ }\scitel{pngdata}\scitek{[}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{8}\scitek{:}\scitel{offset}\scitea{ }\scitek{+}\scitea{ }\scitec{8}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitek{]}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{offset}\scitea{ }\scitek{+=}\scitea{ }\scitec{12}\scitea{ }\scitek{+}\scitea{ }\scitel{length}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'hidden2.tar.bz2'}\scitek{,}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{zlib}\scitek{.}\scitel{decompress}\scitek{(}\scitel{hiddendata}\scitek{))}\scitea{} \\
+\scitea{}
+} %end small

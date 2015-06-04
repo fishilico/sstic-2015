@@ -1,0 +1,40 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Decode the Powershell command lines which were encoded in inject.bin"""}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{base64}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{codecs}\scitea{} \\
+\scitea{} \\
+\sciteb{\# Common prefix}\scitea{} \\
+\scitel{PREFIX}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'function write\_file\_bytes\{'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'param([Byte[]] \$file\_bytes, [string] \$file\_path = ".{\textbackslash}{\textbackslash}stage2.zip");'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$f = [io.file]::OpenWrite(\$file\_path);'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$f.Seek(\$f.Length,0);'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$f.Write(\$file\_bytes,0,\$file\_bytes.Length);'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$f.Close();'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\}'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'function check\_correct\_environment\{'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$e=[Environment]::CurrentDirectory.split("{\textbackslash}{\textbackslash}");'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$e=\$e[\$e.Length-1]+[Environment]::UserName;'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\$e -eq "challenge2015sstic";'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'\}'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'if(check\_correct\_environment)\{'}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{'write\_file\_bytes([Convert]::FromBase64String({\textbackslash}''}\scitek{)}\scitea{} \\
+\scitel{SUFFIX}\scitea{ }\scitek{=}\scitea{ }\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scited{"'));"}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scited{"\}else\{"}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scited{"write\_file\_bytes([Convert]::FromBase64String('VAByAHkASABhAHIAZABlAHIA'));"}\scitea{ }\scitek{+}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scited{"\}"}\scitek{)}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'decoded.out.txt'}\scitek{,}\scitea{ }\scitee{'r'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{fin}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'stage2.zip'}\scitek{,}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{fout}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{for}\scitea{ }\scitel{line}\scitea{ }\scitef{in}\scitea{ }\scitel{fin}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{line}\scitek{.}\scitel{startswith}\scitek{(}\scitee{'powershell -enc '}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{cmd}\scitea{ }\scitek{=}\scitea{ }\scitel{base64}\scitek{.}\scitel{b64decode}\scitek{(}\scitel{line}\scitek{[}\scitel{len}\scitek{(}\scitee{'powershell -enc '}\scitek{):])}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{cmd}\scitea{ }\scitek{=}\scitea{ }\scitel{codecs}\scitek{.}\scitel{decode}\scitek{(}\scitel{cmd}\scitek{,}\scitea{ }\scitee{'utf16'}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{cmd}\scitek{.}\scitel{startswith}\scitek{(}\scitel{PREFIX}\scitek{)}\scitea{ }\scitef{and}\scitea{ }\scitel{cmd}\scitek{.}\scitel{endswith}\scitek{(}\scitel{SUFFIX}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fout}\scitek{.}\scitel{write}\scitek{(}\scitel{base64}\scitek{.}\scitel{b64decode}\scitek{(}\scitel{cmd}\scitek{[}\scitel{len}\scitek{(}\scitel{PREFIX}\scitek{):-}\scitel{len}\scitek{(}\scitel{SUFFIX}\scitek{)]))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{else}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{print}\scitek{(}\scitel{cmd}\scitek{)}\scitea{} \\
+\scitea{}
+} %end small

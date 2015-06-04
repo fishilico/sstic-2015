@@ -1,0 +1,23 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Decode the firmware of transputer 4-12 loader"""}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{sys}\scitea{} \\
+\scitel{sys}\scitek{.}\scitel{path}\scitek{.}\scitel{insert}\scitek{(}\scitec{0}\scitek{,}\scitea{ }\scitee{'.'}\scitek{)}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{decode\_st20}\scitea{ }\scitef{import}\scitea{ }\scitel{FileMeta}\scitea{} \\
+\scitea{} \\
+\scitel{CODE\_LABELS}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x00}\scitek{:}\scitea{ }\scitee{'boot'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x20}\scitek{:}\scitea{ }\scitee{'exit'}\scitek{,}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitel{COMMENTS}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x19}\scitek{:}\scitea{ }\scited{"Download the next code in 0x1f"}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x1e}\scitek{:}\scitea{ }\scited{"Run the main code"}\scitek{,}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'transputer4\_loader.bin'}\scitek{,}\scitea{ }\scitee{'rb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{fw}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{read}\scitek{().}\scitel{rstrip}\scitek{(}\scitee{b' '}\scitek{)}\scitea{} \\
+\scitea{} \\
+\scitel{FileMeta}\scitek{(}\scitel{fw}\scitek{,}\scitea{ }\scitec{0}\scitek{,}\scitea{ }\scitel{CODE\_LABELS}\scitek{,}\scitea{ }\scitek{\{\},}\scitea{ }\scitel{COMMENTS}\scitek{).}\scitel{show\_all}\scitek{()}\scitea{} \\
+\scitea{}
+} %end small

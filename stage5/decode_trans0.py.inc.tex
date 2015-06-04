@@ -1,0 +1,35 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Decode the firmware of transputer 0"""}\scitea{} \\
+\scitef{import}\scitea{ }\scitel{sys}\scitea{} \\
+\scitel{sys}\scitek{.}\scitel{path}\scitek{.}\scitel{insert}\scitek{(}\scitec{0}\scitek{,}\scitea{ }\scitee{'.'}\scitek{)}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{decode\_st20}\scitea{ }\scitef{import}\scitea{ }\scitel{FileMeta}\scitea{} \\
+\scitea{} \\
+\scitel{CODE\_LABELS}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x00}\scitek{:}\scitea{ }\scitee{'boot'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x17}\scitek{:}\scitea{ }\scitee{'initialize\_other\_transputers'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x37}\scitek{:}\scitea{ }\scitee{'initialization\_done'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x77}\scitek{:}\scitea{ }\scitee{'mainloop'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0xf4}\scitek{:}\scitea{ }\scitee{'end'}\scitek{,}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitel{DATA\_LABELS}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0xdc}\scitek{:}\scitea{ }\scitee{'"Boot ok"'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0xe4}\scitek{:}\scitea{ }\scitee{'"Code Ok"'}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0xec}\scitek{:}\scitea{ }\scitee{'"Decrypt"'}\scitek{,}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitel{COMMENTS}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0x54}\scitek{:}\scitea{ }\scited{"read 'KEY:'"}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitec{0xcf}\scitek{:}\scitea{ }\scited{"W[4] is incremented modulo 12"}\scitek{,}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'input.bin'}\scitek{,}\scitea{ }\scitee{'rb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{inputdata}\scitea{ }\scitek{=}\scitea{ }\scitel{f}\scitek{.}\scitel{read}\scitek{()}\scitea{} \\
+\scitea{} \\
+\sciteb{\# First byte if the size of the firmware}\scitea{} \\
+\scitel{fwsize}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitec{0}\scitek{]}\scitea{} \\
+\scitel{fw}\scitea{ }\scitek{=}\scitea{ }\scitel{inputdata}\scitek{[}\scitec{1}\scitek{:}\scitec{1}\scitea{ }\scitek{+}\scitea{ }\scitel{fwsize}\scitek{]}\scitea{} \\
+\scitel{FileMeta}\scitek{(}\scitel{fw}\scitek{,}\scitea{ }\scitec{0}\scitek{,}\scitea{ }\scitel{CODE\_LABELS}\scitek{,}\scitea{ }\scitel{DATA\_LABELS}\scitek{,}\scitea{ }\scitel{COMMENTS}\scitek{).}\scitel{show\_all}\scitek{()}\scitea{} \\
+\scitea{}
+} %end small

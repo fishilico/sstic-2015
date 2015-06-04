@@ -1,0 +1,43 @@
+\small{
+\scitej{\#include $<$cryptopp/serpent.h$>$} \\
+\scitej{\#include $<$cryptopp/modes.h$>$} \\
+\scitej{\#include $<$cryptopp/filters.h$>$} \\
+\scitej{\#include $<$fstream$>$} \\
+\scitej{\#include $<$iostream$>$} \\
+\scitea{} \\
+\scitef{int}\scitea{ }\scitel{main}\scitek{()}\scitea{} \\
+\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitef{unsigned}\scitea{ }\scitef{char}\scitea{ }\scitel{key}\scitek{[}\scitee{32}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0x66}\scitek{,}\scitea{ }\scitee{0xc1}\scitek{,}\scitea{ }\scitee{0xba}\scitek{,}\scitea{ }\scitee{0x5e}\scitek{,}\scitea{ }\scitee{0x8c}\scitek{,}\scitea{ }\scitee{0xa2}\scitek{,}\scitea{ }\scitee{0x9a}\scitek{,}\scitea{ }\scitee{0x8a}\scitek{,}\scitea{ }\scitee{0xb6}\scitek{,}\scitea{ }\scitee{0xc1}\scitek{,}\scitea{ }\scitee{0x05}\scitek{,}\scitea{ }\scitee{0xa9}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0xbe}\scitek{,}\scitea{ }\scitee{0x9e}\scitek{,}\scitea{ }\scitee{0x75}\scitek{,}\scitea{ }\scitee{0xfe}\scitek{,}\scitea{ }\scitee{0x0b}\scitek{,}\scitea{ }\scitee{0xa0}\scitek{,}\scitea{ }\scitee{0x79}\scitek{,}\scitea{ }\scitee{0x97}\scitek{,}\scitea{ }\scitee{0xa8}\scitek{,}\scitea{ }\scitee{0x39}\scitek{,}\scitea{ }\scitee{0xff}\scitek{,}\scitea{ }\scitee{0xea}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0xe9}\scitek{,}\scitea{ }\scitee{0x70}\scitek{,}\scitea{ }\scitee{0x0b}\scitek{,}\scitea{ }\scitee{0x00}\scitek{,}\scitea{ }\scitee{0xb7}\scitek{,}\scitea{ }\scitee{0x26}\scitek{,}\scitea{ }\scitee{0x9c}\scitek{,}\scitea{ }\scitee{0x8d}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\};}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{const}\scitea{ }\scitef{unsigned}\scitea{ }\scitef{char}\scitea{ }\scitel{iv}\scitek{[}\scitee{16}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{\{}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0x53}\scitek{,}\scitea{ }\scitee{0x53}\scitek{,}\scitea{ }\scitee{0x54}\scitek{,}\scitea{ }\scitee{0x49}\scitek{,}\scitea{ }\scitee{0x43}\scitek{,}\scitea{ }\scitee{0x32}\scitek{,}\scitea{ }\scitee{0x30}\scitek{,}\scitea{ }\scitee{0x31}\scitek{,}\scitea{ }\scitee{0x35}\scitek{,}\scitea{ }\scitee{0x2d}\scitek{,}\scitea{ }\scitee{0x53}\scitek{,}\scitea{ }\scitee{0x74}\scitek{,}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitee{0x61}\scitek{,}\scitea{ }\scitee{0x67}\scitek{,}\scitea{ }\scitee{0x65}\scitek{,}\scitea{ }\scitee{0x33}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{\};}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Read encrypted */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{std}\scitek{::}\scitel{ifstream}\scitea{ }\scitel{encrypted\_file}\scitek{(}\sciteg{"encrypted"}\scitek{,}\scitea{ }\scitel{std}\scitek{::}\scitel{ios}\scitek{::}\scitel{in}\scitek{|}\scitel{std}\scitek{::}\scitel{ios}\scitek{::}\scitel{binary}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{char}\scitea{ }\scitel{enc\_data}\scitek{[}\scitee{296798}\scitek{];}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{encrypted\_file}\scitek{.}\scitel{read}\scitek{(}\scitel{enc\_data}\scitek{,}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{enc\_data}\scitek{));}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{encrypted\_file}\scitek{.}\scitel{close}\scitek{();}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{std}\scitek{::}\scitel{string}\scitea{ }\scitel{encrypted}\scitek{(}\scitel{enc\_data}\scitek{,}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{enc\_data}\scitek{));}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Decrypt with Serpent-1-CBC-With-CTS */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{CryptoPP}\scitek{::}\scitel{CBC\_CTS\_Mode}\scitek{$<$}\scitel{CryptoPP}\scitek{::}\scitel{Serpent}\scitek{$>$::}\scitel{Decryption}\scitea{ }\scitel{decipher}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decipher}\scitek{.}\scitel{SetKeyWithIV}\scitek{(}\scitel{key}\scitek{,}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{key}\scitek{),}\scitea{ }\scitel{iv}\scitek{,}\scitea{ }\scitef{sizeof}\scitek{(}\scitel{iv}\scitek{));}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{std}\scitek{::}\scitel{string}\scitea{ }\scitel{decrypted}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{CryptoPP}\scitek{::}\scitel{StringSource}\scitea{ }\scitel{ss}\scitek{(}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{encrypted}\scitek{,}\scitea{ }\scitef{true}\scitek{,}\scitea{ } \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{new}\scitea{ }\scitel{CryptoPP}\scitek{::}\scitel{StreamTransformationFilter}\scitek{(}\scitel{decipher}\scitek{,}\scitea{ }\scitef{new}\scitea{ }\scitel{CryptoPP}\scitek{::}\scitel{StringSink}\scitek{(}\scitel{decrypted}\scitek{))}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitek{);}\scitea{} \\
+\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\sciteb{/* Write decrypted */}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{std}\scitek{::}\scitel{ofstream}\scitea{ }\scitel{decrypted\_file}\scitek{(}\sciteg{"decrypted"}\scitek{,}\scitea{ }\scitel{std}\scitek{::}\scitel{ios}\scitek{::}\scitel{out}\scitek{|}\scitel{std}\scitek{::}\scitel{ios}\scitek{::}\scitel{binary}\scitek{|}\scitel{std}\scitek{::}\scitel{ios}\scitek{::}\scitel{trunc}\scitek{);}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decrypted\_file}\scitea{ }\scitek{$<$$<$}\scitea{ }\scitel{decrypted}\scitek{;}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{decrypted\_file}\scitek{.}\scitel{close}\scitek{();}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{return}\scitea{ }\scitee{0}\scitek{;}\scitea{} \\
+\scitek{\}}\scitea{} \\
+\scitea{}
+} %end small

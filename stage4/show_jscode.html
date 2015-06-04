@@ -1,0 +1,10 @@
+<html><body>
+<div id="code"></div>
+<script>
+oldFunction = 0['constructor']['constructor'];
+0['constructor']['constructor'] = function (code) {
+    document.getElementById('code').innerText = oldFunction(code)();
+}
+</script>
+<script src="stage4.js"></script>
+</body></html>

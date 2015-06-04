@@ -1,0 +1,24 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Extract the hidden data from congratulations.tiff pixels"""}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{PIL}\scitea{ }\scitef{import}\scitea{ }\scitel{Image}\scitea{} \\
+\scitea{} \\
+\scitel{imtiff}\scitea{ }\scitek{=}\scitea{ }\scitel{Image}\scitek{.}\scitel{open}\scitek{(}\scitee{'congratulations.tiff'}\scitek{)}\scitea{} \\
+\scitek{(}\scitel{width}\scitek{,}\scitea{ }\scitel{height}\scitek{)}\scitea{ }\scitek{=}\scitea{ }\scitel{imtiff}\scitek{.}\scitel{size}\scitea{} \\
+\scitel{imdata}\scitea{ }\scitek{=}\scitea{ }\scitel{imtiff}\scitek{.}\scitel{getdata}\scitek{()}\scitea{} \\
+\scitea{} \\
+\sciteb{\# A byte is represented by 4 pixels, and there is no data past half the height of the image}\scitea{} \\
+\scitel{databytes}\scitea{ }\scitek{=}\scitea{ }\scitel{bytearray}\scitek{(}\scitel{width}\scitea{ }\scitek{*}\scitea{ }\scitel{height}\scitea{ }\scitek{//}\scitea{ }\scitec{8}\scitek{)}\scitea{} \\
+\scitea{} \\
+\scitef{for}\scitea{ }\scitel{pxlpos}\scitek{,}\scitea{ }\scitel{pxlvalues}\scitea{ }\scitef{in}\scitea{ }\scitel{enumerate}\scitek{(}\scitel{imdata}\scitek{):}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{if}\scitea{ }\scitel{pxlpos}\scitea{ }\scitek{$>$=}\scitea{ }\scitel{width}\scitea{ }\scitek{*}\scitea{ }\scitel{height}\scitea{ }\scitek{//}\scitea{ }\scitec{2}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitef{break}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bytepos}\scitea{ }\scitek{=}\scitea{ }\scitel{pxlpos}\scitea{ }\scitek{//}\scitea{ }\scitec{4}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{bitpos\_in\_byte}\scitea{ }\scitek{=}\scitea{ }\scitec{6}\scitea{ }\scitek{-}\scitea{ }\scitec{2}\scitea{ }\scitek{*}\scitea{ }\scitek{(}\scitel{pxlpos}\scitea{ }\scitek{-}\scitea{ }\scitec{4}\scitea{ }\scitek{*}\scitea{ }\scitel{bytepos}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{databytes}\scitek{[}\scitel{bytepos}\scitek{]}\scitea{ }\scitek{|=}\scitea{ }\scitek{(}\scitel{pxlvalues}\scitek{[}\scitec{0}\scitek{]}\scitea{ }\scitek{\&}\scitea{ }\scitec{1}\scitek{)}\scitea{ }\scitek{$<$$<$}\scitea{ }\scitek{(}\scitel{bitpos\_in\_byte}\scitea{ }\scitek{+}\scitea{ }\scitec{1}\scitek{)}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{databytes}\scitek{[}\scitel{bytepos}\scitek{]}\scitea{ }\scitek{|=}\scitea{ }\scitek{(}\scitel{pxlvalues}\scitek{[}\scitec{1}\scitek{]}\scitea{ }\scitek{\&}\scitea{ }\scitec{1}\scitek{)}\scitea{ }\scitek{$<$$<$}\scitea{ }\scitel{bitpos\_in\_byte}\scitea{} \\
+\scitea{} \\
+\scitef{with}\scitea{ }\scitel{open}\scitek{(}\scitee{'hidden3.tar.bz2'}\scitek{,}\scitea{ }\scitee{'wb'}\scitek{)}\scitea{ }\scitef{as}\scitea{ }\scitel{f}\scitek{:}\scitea{} \\
+\scitea{{\hspace*{1.2ex}}{\hspace*{1.2ex}}{\hspace*{1.2ex}} }\scitel{f}\scitek{.}\scitel{write}\scitek{(}\scitel{databytes}\scitek{)}\scitea{} \\
+\scitea{}
+} %end small

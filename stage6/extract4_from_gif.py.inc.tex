@@ -1,0 +1,12 @@
+\small{
+\sciteb{\#!/usr/bin/env python3}\scitea{} \\
+\sciteh{"""Modify congratulations.gif to show the solution"""}\scitea{} \\
+\scitef{from}\scitea{ }\scitel{PIL}\scitea{ }\scitef{import}\scitea{ }\scitel{Image}\scitea{} \\
+\scitea{} \\
+\scitel{imgif}\scitea{ }\scitek{=}\scitea{ }\scitel{Image}\scitek{.}\scitel{open}\scitek{(}\scitee{'congratulations.gif'}\scitek{)}\scitea{} \\
+\scitel{palette}\scitea{ }\scitek{=}\scitea{ }\scitel{imgif}\scitek{.}\scitel{getpalette}\scitek{()}\scitea{} \\
+\scitel{palette}\scitek{[}\scitec{6}\scitek{:}\scitec{9}\scitek{]}\scitea{ }\scitek{=}\scitea{ }\scitek{[}\scitec{181}\scitek{,}\scitea{ }\scitec{230}\scitek{,}\scitea{ }\scitec{255}\scitek{]}\scitea{} \\
+\scitel{imgif}\scitek{.}\scitel{putpalette}\scitek{(}\scitel{palette}\scitek{)}\scitea{} \\
+\scitel{imgif}\scitek{.}\scitel{save}\scitek{(}\scitee{'solution.png'}\scitek{)}\scitea{} \\
+\scitea{}
+} %end small
