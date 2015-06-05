@@ -237,11 +237,15 @@ solution.pdf: stage2/chain-tile-out.png
 solution.pdf: stage2/jump-tile-out.png
 solution.pdf: stage2/monitor-tile-out.png
 solution.pdf: stage3/paint-out.png
+solution.pdf: stage5/schematic.pdf
 solution.pdf: stage5/input-desc-out.txt
 solution.pdf: stage5/code-trans0-out.txt
 solution.pdf: stage5/code-trans123-out.txt
 solution.pdf: stage5/code-loader-out.txt
 solution.pdf: stage5/code-all-main-out.txt
+solution.pdf: stage6/congratulations.jpg
+solution.pdf: stage6/congratulations.png
+solution.pdf: stage6/solution.png
 
 solution.pdf: solution.tex
 	latexmk -pdf < /dev/null
